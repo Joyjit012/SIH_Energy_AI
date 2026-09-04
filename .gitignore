@@ -1,18 +1,22 @@
 # Virtual Environments
 .venv/
+**/.venv/
 venv/
 env/
-ENV/
 
 # Node dependencies & builds
 node_modules/
+**/node_modules/
 dist/
+**/dist/
 build/
+**/build/
 .next/
 .cache/
 
 # Python cache & temporary files
 __pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
 tempCodeRunnerFile.py
@@ -20,16 +24,15 @@ tempCodeRunnerFile.py
 # Environment variables & secrets
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*.local
 
 # Logs & debug files
 *.log
+**/*.log
 .manus-logs/
+**/.manus-logs/
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
 
 # OS metadata
 .DS_Store
