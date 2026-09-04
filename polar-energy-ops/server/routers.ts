@@ -22,37 +22,40 @@ async function invokeGemini(
     parts: [{ text: m.content }],
   }));
 
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        system_instruction: {
-          parts: [{ text: polarOpsSystemPrompt }],
-        },
-        contents,
-      }),
+  const models = ["gemini-2.0-flash", "gemini-1.5-flash"];
+  let lastError = "";
+
+  for (const model of models) {
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            system_instruction: {
+              parts: [{ text: polarOpsSystemPrompt }],
+            },
+            contents,
+          }),
+        }
+      );
+
+      if (res.ok) {
+        const data = await res.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) return text;
+      } else {
+        lastError = await res.text();
+      }
+    } catch (e) {
+      lastError = e instanceof Error ? e.message : String(e);
     }
-  );
-
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(
-      `Gemini API call failed with status ${res.status}: ${errorText}`
-    );
   }
 
-  const data = await res.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-  if (!text) {
-    throw new Error("No response text returned from Gemini API");
-  }
-
-  return text;
+  throw new Error(`Gemini API call failed: ${lastError}`);
 }
 
 function fallbackAnswer(question: string) {
