@@ -5,6 +5,8 @@ import { invokeLLM } from "./_core/llm";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 
+import { ENV } from "./_core/env";
+
 const polarOpsSystemPrompt = `You are PolarOps, an expert energy-management copilot for remote polar research stations.
 
 Your job is to answer questions about load forecasting, renewable-energy integration, microgrid dispatch, battery strategy, generator scheduling, and fuel optimization under extreme polar conditions. Be practical, concise, and technically clear. Organize answers with short headings and bullets when useful.
@@ -12,6 +14,39 @@ Your job is to answer questions about load forecasting, renewable-energy integra
 Always reason about polar constraints such as long darkness, icing and snow accumulation, low-temperature battery derating, wind-turbine cut-out or icing risk, fuel logistics, generator warm-up and minimum-load limits, maintenance windows, thermal loads, communications outages, and the need for redundant power. When a question lacks site-specific data, state the assumptions and recommend the measurements or operational inputs needed to improve the answer. Distinguish planning guidance from a control command. Never invent sensor readings, weather forecasts, or station policies. Encourage verification by the station energy lead before changing live dispatch settings.
 
 Use SI units and UTC when relevant. The interface may show illustrative demo telemetry for a generic polar station; do not treat it as a live control system. Give an actionable next step at the end of most answers.`;
+
+async function invokeGemini(apiKey: string, messages: { role: string; content: string }[]) {
+  const contents = messages.map(m => ({
+    role: m.role === "assistant" ? "model" : "user",
+    parts: [{ text: m.content }]
+  }));
+
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        system_instruction: {
+          parts: [{ text: polarOpsSystemPrompt }]
+        },
+        contents,
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Gemini API call failed with status ${res.status}: ${errorText}`);
+  }
+
+  const data = await res.json();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) {
+    throw new Error("No response text returned from Gemini API");
+  }
+  return text;
+}
 
 const chatMessageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -74,27 +109,40 @@ export const appRouter = router({
       .input(z.object({ messages: z.array(chatMessageSchema).min(1).max(24) }))
       .mutation(async ({ input }) => {
         const lastQuestion = input.messages[input.messages.length - 1]?.content ?? "";
-        try {
-          const response = await Promise.race([
-            invokeLLM({
-              model: "gpt-5-mini",
-              messages: [
-                { role: "system", content: polarOpsSystemPrompt },
-                ...input.messages,
-              ],
-              reasoning: { effort: "low" },
-            }),
-            new Promise<never>((_, reject) =>
-              setTimeout(() => reject(new Error("LLM response timeout")), 7000),
-            ),
-          ]);
-          const content = response.choices?.[0]?.message?.content;
-          if (typeof content === "string" && content.trim().length > 0) {
+        
+        if (ENV.geminiApiKey) {
+          try {
+            const content = await invokeGemini(ENV.geminiApiKey, input.messages);
             return { content };
+          } catch (error) {
+            console.warn("[PolarOps] Gemini API error, falling back:", error);
           }
-        } catch (error) {
-          console.warn("[PolarOps] Falling back to local guidance:", error);
         }
+
+        if (ENV.forgeApiKey) {
+          try {
+            const response = await Promise.race([
+              invokeLLM({
+                model: "gpt-5-mini",
+                messages: [
+                  { role: "system", content: polarOpsSystemPrompt },
+                  ...input.messages,
+                ],
+                reasoning: { effort: "low" },
+              }),
+              new Promise<never>((_, reject) =>
+                setTimeout(() => reject(new Error("LLM response timeout")), 7000),
+              ),
+            ]);
+            const content = response.choices?.[0]?.message?.content;
+            if (typeof content === "string" && content.trim().length > 0) {
+              return { content };
+            }
+          } catch (error) {
+            console.warn("[PolarOps] Forge LLM error, falling back:", error);
+          }
+        }
+
         return { content: fallbackAnswer(lastQuestion) };
       }),
   }),
