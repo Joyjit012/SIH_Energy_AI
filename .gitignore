@@ -1,3 +1,18 @@
+# Large Machine Learning Models (>100MB)
+models/
+*.pkl
+*.h5
+*.onnx
+*.pth
+*.pt
+*.bin
+
+# Large Datasets (>100MB)
+data/weather_data.csv
+data/time_series_60min_singleindex.csv
+*.db
+*.sqlite
+
 # Virtual Environments
 .venv/
 **/.venv/
