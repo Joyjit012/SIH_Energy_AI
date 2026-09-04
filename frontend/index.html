@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart AI Energy Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Lucide icons (lightweight SVG icon set) -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+<!-- ============================================================
+     APP SHELL
+============================================================ -->
+<div class="app-shell">
+
+    <!-- =============================================
+         LEFT NAVIGATION SIDEBAR
+    ============================================= -->
+    <nav class="left-nav" id="leftNav">
+
+        <!-- Logo -->
+        <div class="nav-brand">
+            <div class="nav-brand-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <div class="nav-brand-text">
+                <span class="brand-name">EnergyAI</span>
+                <span class="brand-tag">SIH · 2026</span>
+            </div>
+        </div>
+
+        <!-- Section Label -->
+        <p class="nav-section-label">MENU</p>
+
+        <!-- Links -->
+        <ul class="nav-links">
+            <li>
+                <a href="#" class="nav-link active" data-page="dashboard" onclick="return switchPage('dashboard', this)">
+                    <span class="nav-link-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    </span>
+                    <span class="nav-link-label">Dashboard</span>
+                    <span class="nav-link-active-bar"></span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-page="ai-model" onclick="return switchPage('ai-model', this)">
+                    <span class="nav-link-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                    </span>
+                    <span class="nav-link-label">PolarOps</span>
+                    <span class="nav-link-active-bar"></span>
+                </a>
+            </li>
+        </ul>
+
+        <!-- Bottom Status -->
+        <div class="nav-bottom">
+            <div class="nav-system-status">
+                <span class="pulse-dot"></span>
+                <span>System Online</span>
+            </div>
+            <div class="nav-version">v1.0.0</div>
+        </div>
+
+    </nav>
+
+    <!-- =============================================
+         RIGHT CONTENT AREA
+    ============================================= -->
+    <div class="content-area">
+
+        <!-- =============================================
+             TOP HEADER BAR (with embedded status alerts)
+        ============================================= -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="topbar-titles">
+                    <h1 id="pageTitle">Dashboard</h1>
+                    <p id="pageSubtitle">Renewable Energy Forecast &amp; Optimization</p>
+                </div>
+            </div>
+
+            <!-- STATUS ALERTS live here inside the top bar -->
+            <div class="topbar-alerts" id="topbarAlerts">
+                <!-- Battery Low Alert -->
+                <div class="topbar-alert alert-battery hidden" id="batteryAlertMsg">
+                    <span class="alert-pip alert-pip-red"></span>
+                    <svg class="alert-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2"/><path d="M22 11v2"/></svg>
+                    <span id="batteryAlertText">Battery Low: 20%</span>
+                </div>
+
+                <!-- Renewable Charging Alert -->
+                <div class="topbar-alert alert-renewable hidden" id="renewableAlertMsg">
+                    <span class="alert-pip alert-pip-green"></span>
+                    <svg class="alert-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <span id="renewableAlertText">Excess Renewable — Charging</span>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="topbar-status-badge">
+                    <span class="pulse-dot green"></span>
+                    <span>System Online</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- =============================================
+             PAGE: DASHBOARD
+        ============================================= -->
+        <div id="page-dashboard" class="page active-page">
+            <main class="page-body">
+
+                <div class="two-col-layout">
+
+                    <!-- LEFT CONTROL SIDEBAR -->
+                    <aside class="ctrl-sidebar">
+
+                        <!-- Forecast Controls Card -->
+                        <div class="card">
+                            <div class="card-head">
+                                <h3 class="card-title">
+                                    <svg class="card-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    Forecast Controls
+                                </h3>
+                            </div>
+
+                            <div class="mode-toggle">
+                                <button id="singleModeBtn" class="toggle-btn active" type="button">Single Date</button>
+                                <button id="rangeModeBtn" class="toggle-btn" type="button">Date Range</button>
+                            </div>
+
+                            <!-- Single Date -->
+                            <div id="singleDateSection" class="field-group">
+                                <label class="field-label" for="singleDate">Select Date</label>
+                                <input type="date" id="singleDate" class="field-input">
+                                <button id="loadSingleBtn" class="btn-primary" type="button">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                                    Load Forecast
+                                </button>
+                            </div>
+
+                            <!-- Date Range -->
+                            <div id="rangeDateSection" class="field-group hidden">
+                                <label class="field-label" for="startDate">Start Date</label>
+                                <input type="date" id="startDate" class="field-input">
+                                <label class="field-label" for="endDate" style="margin-top:0.75rem">End Date</label>
+                                <input type="date" id="endDate" class="field-input">
+                                <button id="loadRangeBtn" class="btn-primary" type="button">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                                    Load Forecast
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Available Dates Card -->
+                        <div class="card">
+                            <div class="card-head">
+                                <h3 class="card-title">
+                                    <svg class="card-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                                    Available Dates
+                                </h3>
+                                <span class="card-badge" id="dateCount">0 days</span>
+                            </div>
+                            <div id="dateList" class="date-scroll-list">
+                                <!-- JS injects -->
+                            </div>
+                        </div>
+
+                    </aside>
+
+                    <!-- MAIN CONTENT -->
+                    <div class="main-col">
+
+                        <!-- Forecast Section -->
+                        <section id="forecastSection" class="hidden">
+                            <div id="selectedDateSection" class="hidden">
+
+                                <!-- Date Header -->
+                                <div class="card date-hero-card">
+                                    <div class="date-hero-inner">
+                                        <div>
+                                            <p class="date-hero-sub">Selected Date</p>
+                                            <h2 id="selectedDateTitle" class="date-hero-title">--</h2>
+                                        </div>
+                                        <p class="date-hero-desc">24-Hour AI Renewable Energy &amp; Storage Optimization</p>
+                                    </div>
+                                </div>
+
+                                <!-- KPI Grid -->
+                                <div class="kpi-grid">
+                                    <div class="kpi-card kpi-solar">
+                                        <span class="kpi-icon">☀️</span>
+                                        <div>
+                                            <p class="kpi-label">Solar Generation</p>
+                                            <strong class="kpi-value" id="solarTotal">0 kWh</strong>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-card kpi-wind">
+                                        <span class="kpi-icon">💨</span>
+                                        <div>
+                                            <p class="kpi-label">Wind Generation</p>
+                                            <strong class="kpi-value" id="windTotal">0 kWh</strong>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-card kpi-renewable">
+                                        <span class="kpi-icon">🌿</span>
+                                        <div>
+                                            <p class="kpi-label">Total Renewable</p>
+                                            <strong class="kpi-value" id="renewableTotal">0 kWh</strong>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-card kpi-load">
+                                        <span class="kpi-icon">⚡</span>
+                                        <div>
+                                            <p class="kpi-label">Load Demand</p>
+                                            <strong class="kpi-value" id="loadTotal">0 kWh</strong>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-card kpi-flex">
+                                        <span class="kpi-icon">🔀</span>
+                                        <div>
+                                            <p class="kpi-label">Flexible Load Reduction</p>
+                                            <strong class="kpi-value" id="flexibleTotal">0 kWh</strong>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-card kpi-battery">
+                                        <span class="kpi-icon">🔋</span>
+                                        <div>
+                                            <p class="kpi-label">Battery Used</p>
+                                            <strong class="kpi-value" id="batteryTotal">0 kWh</strong>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-card kpi-generator">
+                                        <span class="kpi-icon">🏭</span>
+                                        <div>
+                                            <p class="kpi-label">Generator Output</p>
+                                            <strong class="kpi-value" id="generatorTotal">0 kWh</strong>
+                                        </div>
+                                    </div>
+                                    <div class="kpi-card kpi-sufficiency">
+                                        <span class="kpi-icon">🎯</span>
+                                        <div>
+                                            <p class="kpi-label">Self-Sufficiency</p>
+                                            <strong class="kpi-value" id="sufficiencyTotal">0%</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Charts -->
+                                <div class="charts-stack">
+                                    <div class="card chart-card">
+                                        <div class="card-head">
+                                            <h3 class="card-title">Renewable Generation vs. Load Demand</h3>
+                                            <span class="card-badge">Chart 1</span>
+                                        </div>
+                                        <div class="chart-wrap">
+                                            <canvas id="generationChart"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="card chart-card">
+                                        <div class="card-head">
+                                            <h3 class="card-title">Battery Usage &amp; State of Charge (SOC)</h3>
+                                            <span class="card-badge">Chart 2</span>
+                                        </div>
+                                        <div class="chart-wrap">
+                                            <canvas id="batteryChart"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="card chart-card">
+                                        <div class="card-head">
+                                            <h3 class="card-title">Generator Backup Dispatch</h3>
+                                            <span class="card-badge">Chart 3</span>
+                                        </div>
+                                        <div class="chart-wrap">
+                                            <canvas id="generatorChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- ═══════════════════════════════════════
+                                     SMART BATTERY CHARGING ANALYSIS CARD
+                                ════════════════════════════════════════ -->
+                                <div class="card sc-card" id="smartChargingCard">
+
+                                    <!-- Header -->
+                                    <div class="card-head">
+                                        <h3 class="card-title">
+                                            <svg class="card-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                                            </svg>
+                                            Smart Battery Charging Analysis
+                                        </h3>
+                                        <span class="card-badge sc-ai-badge">⚡ AI Powered</span>
+                                    </div>
+
+                                    <!-- Info Pills -->
+                                    <div class="sc-pills-row">
+                                        <div class="sc-pill sc-pill-green">
+                                            <p class="sc-pill-label">Best Charging Window</p>
+                                            <strong class="sc-pill-value" id="scBestWindow">--</strong>
+                                        </div>
+                                        <div class="sc-pill sc-pill-blue">
+                                            <p class="sc-pill-label">Peak Surplus</p>
+                                            <strong class="sc-pill-value" id="scPeakSurplus">--</strong>
+                                        </div>
+                                        <div class="sc-pill sc-pill-indigo">
+                                            <p class="sc-pill-label">Estimated Max SOC</p>
+                                            <strong class="sc-pill-value" id="scMaxSoc">--</strong>
+                                        </div>
+                                        <div class="sc-pill sc-pill-amber">
+                                            <p class="sc-pill-label">AI Recommendation</p>
+                                            <strong class="sc-pill-value sc-advice" id="scAdvice">--</strong>
+                                        </div>
+                                    </div>
+
+                                    <!-- Legend -->
+                                    <div class="sc-legend">
+                                        <span class="sc-legend-item"><span class="sc-dot" style="background:#10b981"></span>Renewable Gen</span>
+                                        <span class="sc-legend-item"><span class="sc-dot" style="background:#f43f5e"></span>Load Demand</span>
+                                        <span class="sc-legend-item"><span class="sc-dot" style="background:#6366f1"></span>Battery SOC %</span>
+                                        <span class="sc-legend-item"><span class="sc-dot sc-dot-sq" style="background:rgba(16,185,129,0.18)"></span>Charging Period</span>
+                                        <span class="sc-legend-item"><span class="sc-dot sc-dot-sq" style="background:rgba(250,204,21,0.25)"></span>Best Window</span>
+                                        <span class="sc-legend-item"><span class="sc-dot sc-dot-sq" style="background:rgba(244,63,94,0.12)"></span>Discharging Period</span>
+                                    </div>
+
+                                    <!-- Chart -->
+                                    <div class="chart-wrap" style="height:340px; margin-top:0.5rem;">
+                                        <canvas id="smartChargingChart"></canvas>
+                                    </div>
+
+                                </div>
+
+                                <!-- Hourly Table -->
+                                <div class="card hourly-table-card">
+                                    <div class="card-head">
+                                        <h3 class="card-title">Hourly Forecast Data</h3>
+                                        <span class="card-badge" id="hourCount">0 hours</span>
+                                    </div>
+                                    <div class="table-scroll">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Time</th>
+                                                    <th>Solar</th>
+                                                    <th>Wind</th>
+                                                    <th>Renewable</th>
+                                                    <th>Load</th>
+                                                    <th>Battery SOC</th>
+                                                    <th>Generator</th>
+                                                    <th>Reduction</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="hourlyTable"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </section>
+
+                        <!-- Welcome Message -->
+                        <div id="message" class="welcome-card">
+                            <div class="welcome-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                            </div>
+                            <h3>Select a Date to Begin</h3>
+                            <p>Choose a date or date range from the Forecast Controls to view detailed energy forecast and optimization results.</p>
+                        </div>
+
+                    </div>
+
+                </div>
+            </main>
+        </div>
+
+        <!-- =============================================
+             PAGE: AI MODEL (PolarOps Integration)
+        ============================================= -->
+        <div id="page-ai-model" class="page hidden-page" style="height: calc(100vh - 64px); width: 100%; padding: 0; margin: 0; border-radius: 0;">
+            <iframe 
+                src="http://localhost:3000" 
+                style="width: 100%; height: 100%; border: none; border-radius: 0; background: #ffffff;" 
+                title="PolarOps AI Model"
+                id="ai-model-iframe">
+            </iframe>
+        </div>
+
+    </div><!-- end .content-area -->
+
+</div><!-- end .app-shell -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
