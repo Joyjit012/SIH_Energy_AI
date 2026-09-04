@@ -94,7 +94,7 @@ export default function Home() {
         onSuccess: response => {
           setMessages(current => [
             ...current,
-            { role: "assistant", content: response.content },
+            { role: "assistant", content: response?.content || "No response received" },
           ]);
         },
         onError: () => {

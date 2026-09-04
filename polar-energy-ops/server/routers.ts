@@ -126,9 +126,14 @@ export const appRouter = router({
           }
         }
 
-        return {
-          content: "Gemini API Key is missing. Please set GEMINI_API_KEY in Vercel Project Settings -> Environment Variables and redeploy.",
-        };
+        if (!geminiKey) {
+          const keys = Object.keys(process.env)
+            .filter((k) => !k.includes("SECRET") && !k.includes("PASS") && !k.includes("COOKIE") && !k.includes("TOKEN"))
+            .join(", ");
+          return {
+            content: `Vercel Environment Warning: GEMINI_API_KEY is empty at runtime. Available keys on server: [${keys || "NONE"}]. Please check Vercel Project Settings.`,
+          };
+        }
       }),
   }),
 });
