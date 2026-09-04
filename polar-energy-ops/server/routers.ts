@@ -22,7 +22,7 @@ async function invokeGemini(apiKey: string, messages: { role: string; content: s
   }));
 
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -110,14 +110,18 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const lastQuestion = input.messages[input.messages.length - 1]?.content ?? "";
         
-        if (ENV.geminiApiKey) {
-          try {
-            const content = await invokeGemini(ENV.geminiApiKey, input.messages);
-            return { content };
-          } catch (error) {
-            console.warn("[PolarOps] Gemini API error, falling back:", error);
-          }
-        }
+       if (ENV.geminiApiKey) {
+  try {
+    const content = await invokeGemini(ENV.geminiApiKey, input.messages);
+    return { content };
+  } catch (error) {
+    return {
+      content: `Gemini API Error: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    };
+  }
+}
 
         if (ENV.forgeApiKey) {
           try {
