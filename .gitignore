@@ -52,3 +52,18 @@ yarn-debug.log*
 # OS metadata
 .DS_Store
 Thumbs.db
+
+
+
+# Large datasets
+data/*.csv
+
+# Trained ML models
+models/*.pkl
+
+# Python environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
