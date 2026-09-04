@@ -109,6 +109,12 @@ export const appRouter = router({
       .input(z.object({ messages: z.array(chatMessageSchema).min(1).max(24) }))
       .mutation(async ({ input }) => {
         const lastQuestion = input.messages[input.messages.length - 1]?.content ?? "";
+
+        if (!ENV.geminiApiKey) {
+  return {
+    content: "DEBUG: GEMINI_API_KEY is NOT available in Vercel"
+  };
+}
         
        if (ENV.geminiApiKey) {
   try {
