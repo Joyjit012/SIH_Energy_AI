@@ -109,7 +109,7 @@ export const appRouter = router({
             const content = await invokeGemini(geminiKey, input.messages);
             return { content };
           } catch (error) {
-            console.warn("[PolarOps] Gemini API error, falling back:", error);
+            console.warn("[PolarOps] Gemini API error:", error);
             return {
               content: `Gemini API Error: ${
                 error instanceof Error ? error.message : String(error)
@@ -118,7 +118,9 @@ export const appRouter = router({
           }
         }
 
-        return { content: fallbackAnswer(lastQuestion) };
+        return {
+          content: "Gemini API Key is missing. Please set GEMINI_API_KEY in Vercel Project Settings -> Environment Variables and redeploy.",
+        };
       }),
   }),
 });
