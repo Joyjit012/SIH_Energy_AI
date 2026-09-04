@@ -201,7 +201,6 @@ export default function Home() {
                 <span className="hidden sm:inline">Operations online</span>
                 <span className="sm:hidden">Online</span>
               </div>
-              <div className="flex size-9 items-center justify-center rounded-full bg-[#d9eff8] text-xs font-bold text-[#146187]">AM</div>
             </div>
           </header>
 
