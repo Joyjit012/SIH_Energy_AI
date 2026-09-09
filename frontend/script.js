@@ -576,9 +576,11 @@ function toNumber(value) {
 
     const number = Number(value);
 
-    return Number.isFinite(number)
-        ? number
-        : 0;
+    if (!Number.isFinite(number)) return 0;
+
+    // Clamp floating-point rounding noise to exactly 0
+    // (e.g. 4.5e-13 from Python CSV exports)
+    return Math.abs(number) < 1e-6 ? 0 : number;
 }
 
 
@@ -1520,12 +1522,12 @@ function drawEnergyCharts(data) {
 
 
     const generator =
-        data.map(
-            row =>
-                toNumber(
-                    row.generator
-                )
-        );
+        data.map(row => {
+            const v = toNumber(row.generator);
+            // Treat floating-point near-zero values as exactly 0
+            // (e.g. 4.5e-13 from CSV rounding errors)
+            return v < 0.001 ? 0 : v;
+        });
 
 
     // --------------------------------------------------------
