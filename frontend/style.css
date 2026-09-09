@@ -56,6 +56,51 @@
 }
 
 /* ─────────────────────────────────────────
+   DARK MODE TOKENS
+───────────────────────────────────────── */
+[data-theme="dark"] {
+    /* Sidebar stays dark — only slight shift */
+    --nav-bg: #0a0d12;
+    --nav-border: rgba(255,255,255,0.07);
+
+    /* Topbar */
+    --topbar-bg: #161b22;
+    --topbar-border: #30363d;
+
+    /* Surface */
+    --bg: #0d1117;
+    --card-bg: #161b22;
+    --card-border: #30363d;
+    --card-shadow: 0 1px 4px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.25);
+    --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.45);
+
+    /* Text */
+    --txt-primary: #e6edf3;
+    --txt-secondary: #8b949e;
+    --txt-muted: #6e7681;
+
+    /* Accent — slightly brighter indigo for dark bg */
+    --indigo: #818cf8;
+    --indigo-light: rgba(99,102,241,0.15);
+    --indigo-dark: #6366f1;
+
+    /* Status */
+    --red:        #f87171;
+    --red-bg:     rgba(248,113,113,0.12);
+    --red-border: rgba(248,113,113,0.28);
+    --green:       #34d399;
+    --green-bg:    rgba(52,211,153,0.12);
+    --green-border: rgba(52,211,153,0.28);
+    --amber: #fbbf24;
+}
+
+/* Smooth theme transition on everything except SVG internals */
+*, *::before, *::after {
+    transition: background-color 0.25s ease, border-color 0.25s ease,
+                color 0.2s ease, box-shadow 0.25s ease;
+}
+
+/* ─────────────────────────────────────────
    RESET
 ───────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1037,3 +1082,143 @@ tbody tr:hover { background: #fafafa; }
     height: 10px;
     border: 1px solid rgba(0,0,0,0.08);
 }
+
+/* ─────────────────────────────────────────
+   THEME TOGGLE BUTTON
+───────────────────────────────────────── */
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    cursor: pointer;
+    color: var(--txt-secondary);
+    box-shadow: var(--card-shadow);
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.theme-toggle:hover {
+    background: var(--indigo-light);
+    color: var(--indigo);
+    border-color: var(--indigo);
+}
+
+.theme-toggle svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+}
+
+/* Show sun in dark mode (to switch back to light), moon in light mode */
+.theme-icon-dark  { display: none; }
+.theme-icon-light { display: flex; }
+
+[data-theme="dark"] .theme-icon-dark  { display: flex; }
+[data-theme="dark"] .theme-icon-light { display: none;  }
+
+/* ─────────────────────────────────────────
+   DARK MODE — COMPONENT OVERRIDES
+   (hardcoded colours that need to flip)
+───────────────────────────────────────── */
+
+/* Topbar */
+[data-theme="dark"] .topbar {
+    background: var(--topbar-bg);
+    border-bottom-color: var(--topbar-border);
+}
+
+/* Mode toggle segment control */
+[data-theme="dark"] .mode-toggle {
+    background: #21262d;
+    border-color: #30363d;
+}
+[data-theme="dark"] .toggle-btn        { color: #8b949e; }
+[data-theme="dark"] .toggle-btn.active { background: #30363d; color: var(--indigo); }
+
+/* Date items */
+[data-theme="dark"] .date-item {
+    background: #161b22;
+    border-color: #30363d;
+    color: var(--txt-secondary);
+}
+[data-theme="dark"] .date-item:hover  { background: #21262d; }
+[data-theme="dark"] .date-item.active { background: var(--indigo-light); color: var(--indigo); border-color: var(--indigo); }
+
+/* Date hero card */
+[data-theme="dark"] .date-hero-card {
+    background: linear-gradient(135deg, #010409 0%, #0d1117 100%);
+    border-color: rgba(255,255,255,0.06);
+}
+
+/* KPI pills */
+[data-theme="dark"] .sc-pill-green  { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.25); color: #6ee7b7; }
+[data-theme="dark"] .sc-pill-blue   { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.25); color: #93c5fd; }
+[data-theme="dark"] .sc-pill-indigo { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.25); color: #a5b4fc; }
+[data-theme="dark"] .sc-pill-amber  { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.25); color: #fcd34d; }
+
+/* SC legend strip */
+[data-theme="dark"] .sc-legend {
+    background: #0d1117;
+    border-color: #30363d;
+}
+
+/* Table */
+[data-theme="dark"] table thead { background: #0d1117; }
+[data-theme="dark"] table th    { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] table td    { border-bottom-color: #21262d; color: var(--txt-primary); }
+[data-theme="dark"] table tr:hover td { background: #21262d; }
+
+/* Field inputs */
+[data-theme="dark"] .field-input {
+    background: #0d1117;
+    border-color: #30363d;
+    color: var(--txt-primary);
+}
+[data-theme="dark"] .field-input:focus { border-color: var(--indigo); }
+
+/* KPI card labels */
+[data-theme="dark"] .kpi-label { color: var(--txt-muted); }
+[data-theme="dark"] .kpi-value { color: var(--txt-primary); }
+
+/* Card badge */
+[data-theme="dark"] .card-badge {
+    background: rgba(99,102,241,0.15);
+    border-color: rgba(99,102,241,0.3);
+    color: var(--indigo);
+}
+
+/* Action badges in table */
+[data-theme="dark"] .action-badge {
+    background: rgba(99,102,241,0.15);
+    color: var(--indigo);
+}
+
+/* Welcome card */
+[data-theme="dark"] .welcome-card {
+    background: #161b22;
+    border-color: #30363d;
+    color: var(--txt-secondary);
+}
+
+/* Primary button */
+[data-theme="dark"] .btn-primary {
+    background: var(--indigo);
+    color: #fff;
+}
+[data-theme="dark"] .btn-primary:hover { background: var(--indigo-dark); }
+
+/* Scrollbar for dark mode */
+[data-theme="dark"] ::-webkit-scrollbar-track { background: #0d1117; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #30363d; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #484f58; }

@@ -21,6 +21,31 @@ const API_BASE = "https://sih-energy-ai.onrender.com";
 
 
 // ============================================================
+// DARK / LIGHT MODE TOGGLE
+// ============================================================
+
+(function initTheme() {
+    // Read saved preference, fallback to system preference
+    const saved  = localStorage.getItem("theme");
+    const prefer = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    const theme  = saved || prefer;
+    document.documentElement.setAttribute("data-theme", theme);
+})();
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme") || "light";
+    const next    = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("themeToggle");
+    if (btn) btn.addEventListener("click", toggleTheme);
+});
+
+
+// ============================================================
 // PAGE NAVIGATION
 // ============================================================
 
