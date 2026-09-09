@@ -33,10 +33,24 @@ const API_BASE = "https://sih-energy-ai.onrender.com";
 })();
 
 function toggleTheme() {
+    // Block ALL transitions for this frame so switch is instant
+    const style = document.createElement("style");
+    style.id    = "__no-transition__";
+    style.textContent = "*, *::before, *::after { transition: none !important; }";
+    document.head.appendChild(style);
+
     const current = document.documentElement.getAttribute("data-theme") || "light";
     const next    = current === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
     localStorage.setItem("theme", next);
+
+    // Remove the blocker after paint so normal hover transitions still work
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            const el = document.getElementById("__no-transition__");
+            if (el) el.remove();
+        });
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
